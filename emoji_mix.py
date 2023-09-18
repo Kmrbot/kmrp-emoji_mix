@@ -8,7 +8,7 @@ from plugins.common_plugins_function import while_list_handle
 from .emoji_keys_data import emoji_keys_data
 
 emoji_mix = on_regex(
-    pattern=r"^.+\+.+",
+    pattern=r"^.+(\+|\＋).+",
     priority=5,
     block=True,
 )
@@ -27,6 +27,7 @@ def split_emoji(event) -> Tuple[bool, list, list]:
     if len(emoji_data) != 2:
         return False, [], []
     for emoji_index in range(len(emoji_data)):
+        emoji_data[emoji_index] = emoji_data[emoji_index].replace("\u202a", "").replace("\u202c", "")
         if not is_emoji(emoji_data[emoji_index]):
             return False, [], []
         # 一个emoji表情可能有多个字符，组合成规定的样子
