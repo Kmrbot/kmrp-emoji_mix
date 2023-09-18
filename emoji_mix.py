@@ -47,7 +47,7 @@ async def _(
 ):
     result = split_emoji(event)
     if not result[0]:
-        emoji_mix.finish()
+        await emoji_mix.finish()
     emoji_left = "u" + hex(ord(result[1]))[2:]
     emoji_right = "u" + hex(ord(result[2]))[2:]
 
@@ -61,6 +61,11 @@ async def _(
                 f"https://www.gstatic.com/android/keyboard/emojikitchen/{date}/"
                 f"{emoji_left}/{emoji_left}_{emoji_right}.png",
                 headers=header)
+            if resp.status != 200:
+                resp = await session.get(
+                    f"https://www.gstatic.com/android/keyboard/emojikitchen/{date}/"
+                    f"{emoji_right}/{emoji_right}_{emoji_left}.png",
+                    headers=header)
             if resp.status == 200:
                 image_data = await resp.read()
                 msg = Message(f"[CQ:reply,id={event.message_id}]") + Message(MessageSegment.image(image_data))
