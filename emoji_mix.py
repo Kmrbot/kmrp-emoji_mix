@@ -9,7 +9,8 @@ from .emoji_keys_data import emoji_keys_data
 
 emoji_mix = on_regex(
     pattern=r"^.+\+.+",
-    priority=5
+    priority=5,
+    block=True,
 )
 
 emoji_mix.__doc__ = """emoji_mix"""
