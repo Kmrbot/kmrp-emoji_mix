@@ -37,7 +37,8 @@ def split_emoji(event):
     emoji_data = event.message[0].data.get("text", "").split("+")
     if len(emoji_data) != 2:
         return False, "", ""
-    if not is_emoji(emoji_data[0]) or not is_emoji(emoji_data[1]):
+    if not is_emoji(emoji_data[0]) or len(emoji_data[0]) != 1 or \
+            not is_emoji(emoji_data[1]) or len(emoji_data[1]) != 1:
         return False, "", ""
     return True, emoji_data[0], emoji_data[1]
 
