@@ -4,11 +4,11 @@ from emoji import is_emoji
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent, PrivateMessageEvent
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot import on_regex
-from plugins.common_plugins_function import while_list_handle
+from plugins.common_plugins_function import white_list_handle
 from .emoji_keys_data import emoji_keys_data
 
 emoji_mix = on_regex(
-    pattern=r"^.+(\+|\＋).+",
+    pattern=r"^.+(\+|\＋).+$",
     priority=5,
     block=True,
 )
@@ -16,7 +16,7 @@ emoji_mix = on_regex(
 emoji_mix.__doc__ = """emoji_mix"""
 emoji_mix.__help_type__ = None
 
-emoji_mix.handle()(while_list_handle("emoji_mix"))
+emoji_mix.handle()(white_list_handle("emoji_mix"))
 
 
 def split_emoji(event) -> Tuple[bool, list, list]:
