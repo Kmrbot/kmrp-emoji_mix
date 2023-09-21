@@ -1,6 +1,7 @@
 import aiohttp
 from typing import Union, Tuple
 from emoji import is_emoji
+from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent, PrivateMessageEvent
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot import on_regex
@@ -10,7 +11,6 @@ from .emoji_keys_data import emoji_keys_data
 emoji_mix = on_regex(
     pattern=r"^.+(\+|\＋).+$",
     priority=5,
-    block=True,
 )
 
 emoji_mix.__doc__ = """emoji_mix"""
@@ -65,11 +65,15 @@ def get_emoji_keys(emoji_data, emoji_keys) -> Union[None, Tuple[str, str, str]]:
 
 @emoji_mix.handle()
 async def _(
+        matcher: Matcher,
         event: Union[GroupMessageEvent, PrivateMessageEvent]
 ):
     result = split_emoji(event)
     if not result[0]:
         await emoji_mix.finish()
+
+    # 仅当符合emoji要求才阻断
+    matcher.stop_propagation()
     result = get_emoji_keys(result[1], result[2])
     if result is None:
         msg = Message(f"[CQ:reply,id={event.message_id}]") + Message("未找到以上两种emoji的mix表情")
