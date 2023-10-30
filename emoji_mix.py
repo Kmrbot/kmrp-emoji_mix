@@ -2,8 +2,8 @@ import aiohttp
 from typing import Union, Tuple
 from emoji import is_emoji
 from nonebot.matcher import Matcher
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent, PrivateMessageEvent
-from nonebot.adapters.onebot.v11.message import Message, MessageSegment
+from protocol_adapter.protocol_adapter import ProtocolAdapter
+from protocol_adapter.adapter_type import AdapterGroupMessageEvent, AdapterPrivateMessageEvent
 from nonebot import on_regex
 from plugins.common_plugins_function import white_list_handle
 from .emoji_keys_data import emoji_keys_data
@@ -11,6 +11,7 @@ from .emoji_keys_data import emoji_keys_data
 emoji_mix = on_regex(
     pattern=r"^.+(\+|\＋).+$",
     priority=5,
+    block=False
 )
 
 emoji_mix.__doc__ = """emoji_mix"""
@@ -66,7 +67,7 @@ def get_emoji_keys(emoji_data, emoji_keys) -> Union[None, Tuple[str, str, str]]:
 @emoji_mix.handle()
 async def _(
         matcher: Matcher,
-        event: Union[GroupMessageEvent, PrivateMessageEvent]
+        event: Union[AdapterGroupMessageEvent, AdapterPrivateMessageEvent]
 ):
     result = split_emoji(event)
     if not result[0]:
@@ -76,7 +77,7 @@ async def _(
     matcher.stop_propagation()
     result = get_emoji_keys(result[1], result[2])
     if result is None:
-        msg = Message(f"[CQ:reply,id={event.message_id}]") + Message("未找到以上两种emoji的mix表情")
+        msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.text("未找到以上两种emoji的mix表情")
         await emoji_mix.finish(msg)
         return
     else:
@@ -95,7 +96,7 @@ async def _(
             headers=header)
         if resp.status == 200:
             image_data = await resp.read()
-            msg = Message(f"[CQ:reply,id={event.message_id}]") + Message(MessageSegment.image(image_data))
+            msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.image(image_data)
             await emoji_mix.finish(msg)
-        msg = Message(f"[CQ:reply,id={event.message_id}]") + Message("未找到以上两种emoji的mix表情\n拉取失败")
+        msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.text("未找到以上两种emoji的mix表情\n拉取失败")
         await emoji_mix.finish(msg)
