@@ -5,7 +5,7 @@ from nonebot.matcher import Matcher
 from protocol_adapter.protocol_adapter import ProtocolAdapter
 from protocol_adapter.adapter_type import AdapterGroupMessageEvent, AdapterPrivateMessageEvent
 from nonebot import on_regex
-from plugins.common_plugins_function import white_list_handle
+from utils.permission import white_list_handle
 from .emoji_keys_data import emoji_keys_data
 
 emoji_mix = on_regex(
