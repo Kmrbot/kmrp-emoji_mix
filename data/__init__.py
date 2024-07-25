@@ -14,7 +14,7 @@ def init_emoji_data():
             for _, data in json.load(f)["data"].items():
                 first_emoji = data["emoji"]
                 emoji_key_data[first_emoji] = {}
-                for combination in data["combinations"]:
+                for _, combination in data["combinations"].items():
                     l_emoji = combination["leftEmoji"]
                     r_emoji = combination["rightEmoji"]
                     # 保证first_emoji和second_emoji是不一样的
