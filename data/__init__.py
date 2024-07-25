@@ -14,15 +14,16 @@ def init_emoji_data():
             for _, data in json.load(f)["data"].items():
                 first_emoji = data["emoji"]
                 emoji_key_data[first_emoji] = {}
-                for _, combination in data["combinations"].items():
-                    l_emoji = combination["leftEmoji"]
-                    r_emoji = combination["rightEmoji"]
-                    # 保证first_emoji和second_emoji是不一样的
-                    second_emoji = r_emoji if l_emoji == first_emoji else l_emoji
-                    emoji_key_data[first_emoji][second_emoji] = {
-                        "url": combination["gStaticUrl"]
-                    }
-                emoji_key_length += len(data["combinations"])
+                for _, all_combination in data["combinations"].items():
+                    for combination in all_combination:
+                        l_emoji = combination["leftEmoji"]
+                        r_emoji = combination["rightEmoji"]
+                        # 保证first_emoji和second_emoji是不一样的
+                        second_emoji = r_emoji if l_emoji == first_emoji else l_emoji
+                        emoji_key_data[first_emoji][second_emoji] = {
+                            "url": combination["gStaticUrl"]
+                        }
+                    emoji_key_length += len(all_combination)
         except json.JSONDecodeError:
             logger.error("init_emoji_data json decode fail !")
             return None
