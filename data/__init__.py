@@ -6,7 +6,8 @@ from nonebot.log import logger
 # emoji_key_data的数据是字典嵌套字典，每一层字典的key都可能是左emojiCode或右emojiCode
 emoji_key_data = {}
 
-
+# https://github.com/xsalazar/emoji-kitchen
+# curl -L --compressed https://raw.githubusercontent.com/xsalazar/emoji-kitchen-backend/main/app/metadata.json -o src/Components/metadata.json
 def init_emoji_data():
     emoji_key_length = 0
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "metadata.json"), encoding="utf-8") as f:
