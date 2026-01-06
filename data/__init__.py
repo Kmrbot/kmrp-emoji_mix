@@ -53,7 +53,7 @@ def reload_emoji_data(emoji_data: str):
         return is_success, pre_count, cur_count
 
 
-def get_emoji_url(left_emoji, right_emoji) -> Optional[str]:
+def get_emoji_url(left_emoji, right_emoji) -> str | None:
     emoji_data = emoji_key_data.get(left_emoji, {}).get(right_emoji)
     if emoji_data is None:
         left_emoji, right_emoji = right_emoji, left_emoji

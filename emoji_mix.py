@@ -5,6 +5,8 @@ from nonebot.matcher import Matcher
 from protocol_adapter.protocol_adapter import ProtocolAdapter
 from protocol_adapter.adapter_type import AdapterGroupMessageEvent, AdapterPrivateMessageEvent
 from nonebot import on_regex
+
+from utils.net import KmrNet
 from utils.permission import white_list_handle
 from . import data
 
@@ -49,15 +51,12 @@ async def _(
         msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.text("未找到以上两种emoji的mix表情")
         return await emoji_mix.finish(msg)
 
-    header = {
+    extra_header = {
         "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
     }
-    async with aiohttp.ClientSession() as session:
-        # 遍历所有时间
-        resp = await session.get(url, headers=header)
-        if resp.status == 200:
-            image_data = await resp.read()
-            msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.image(image_data)
-            await emoji_mix.finish(msg)
+    resp, err = await KmrNet.get_bytes(url, extra_header=extra_header)
+    if err is not None:
         msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.text("未找到以上两种emoji的mix表情\n拉取失败")
         await emoji_mix.finish(msg)
+    msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.image(resp)
+    await emoji_mix.finish(msg)

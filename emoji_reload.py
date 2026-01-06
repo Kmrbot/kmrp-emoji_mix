@@ -1,4 +1,6 @@
 from typing import Annotated
+
+import aiohttp
 import requests
 from nonebot.log import logger
 from nonebot.rule import to_me, Namespace, ArgumentParser
@@ -6,6 +8,8 @@ from nonebot.params import ShellCommandArgs
 from protocol_adapter.adapter_type import AdapterMessageEvent
 from protocol_adapter.protocol_adapter import ProtocolAdapter
 from nonebot import on_shell_command
+
+from utils.net import KmrNet
 from utils.permission import white_list_handle
 from utils.permission import only_me
 from utils.push_manager import PushManager
@@ -39,14 +43,14 @@ async def reload(**kwargs):
         is_success, pre_emoji_count, cur_emoji_count = init_emoji_data()
     else:
         url = "https://raw.githubusercontent.com/xsalazar/emoji-kitchen-backend/main/app/metadata.json"
-        req = requests.get(url, allow_redirects=True)
-        if req.status_code != 200:
-            logger.warning(f"emoji_reload url {url} get fail ! status_code = {req.status_code}")
+        resp, err = await KmrNet.get(url)
+        if err is not None:
+            logger.warning(f"emoji_reload url {url} get fail ! err = {err}")
             is_success = False
             pre_emoji_count = 0
             cur_emoji_count = 0
         else:
-            is_success, pre_emoji_count, cur_emoji_count = reload_emoji_data(emoji_data=req.text)
+            is_success, pre_emoji_count, cur_emoji_count = reload_emoji_data(emoji_data=resp)
 
     if is_success:
         ret_msg = f"emoji热更新完成。当前总emoji数量： {cur_emoji_count}， 新增{cur_emoji_count - pre_emoji_count}个。"
